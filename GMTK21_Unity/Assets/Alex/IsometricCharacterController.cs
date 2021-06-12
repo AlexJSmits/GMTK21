@@ -15,17 +15,16 @@ public class IsometricCharacterController : MonoBehaviour
     [Space]
     public float speed = 6;
     public float rotationSpeed = 1;
-    public float lineDistance = 3;
     public float turnSmoothTime = 0.1f;
-    public float kickforce = 1;
-    public float kickChargeTime = 1;
+    public float throwforce = 1;
 
-
-    private float currentKickCharge;
+    [Space]
+    public bool throwing;
+    public bool inRange;
+    public bool holding;
+    
     private float turnSmoothVelocity;
-    private bool kicking;
     private CharacterController controller;
-    private LineRenderer line;
     private Ray ray;
     private RaycastHit hitInfo;
 
@@ -34,7 +33,6 @@ public class IsometricCharacterController : MonoBehaviour
     void Start()
     {
         controller = GetComponent<CharacterController>();
-        line = GetComponent<LineRenderer>();
         Physics.IgnoreLayerCollision(8, 9, true);
     }
 
@@ -45,16 +43,14 @@ public class IsometricCharacterController : MonoBehaviour
 
         PlayerMovement();
 
-        if (kicking)
+        if (holding)
         {
-            Kick();
+            Grab();
         }
 
-        if (Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButton(1) && !holding && !throwing)
         {
-            kicking = true;
-            line.enabled = true;
-            currentKickCharge = kickChargeTime;
+            holding = true;
         }
 
     }
@@ -65,7 +61,7 @@ public class IsometricCharacterController : MonoBehaviour
         float vertical = Input.GetAxisRaw("Vertical");
         Vector3 direction = new Vector3(horizontal, 0f, vertical).normalized;
 
-        if (direction.magnitude >= 0.1f && !kicking)
+        if (direction.magnitude >= 0.1f)
         {
             float targetAngle = Mathf.Atan2(direction.x, direction.z) * Mathf.Rad2Deg + cam.eulerAngles.y;
             float angle = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle, ref turnSmoothVelocity, turnSmoothTime);
@@ -85,49 +81,63 @@ public class IsometricCharacterController : MonoBehaviour
             camPivot.transform.Rotate(0, -rotationSpeed * Time.deltaTime, 0);
         }
 
-    }
-
-    void Kick()
-    {
-        currentKickCharge -= Time.deltaTime;
-
         ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-
-        ball.GetComponent<Rigidbody>().isKinematic = true;
-        ball.transform.position = Vector3.Lerp(ball.transform.position, ballPrimer.transform.position, Time.deltaTime * 5);
-        
         if (Physics.Raycast(ray, out hitInfo))
         {
             //rotate player to mouse
 
-            Vector3 direction = (hitInfo.point - transform.position).normalized;
-            Quaternion lookRotation = Quaternion.LookRotation(new Vector3(direction.x, 0, direction.z));
+            Vector3 mouseDirection = (hitInfo.point - transform.position).normalized;
+            Quaternion lookRotation = Quaternion.LookRotation(new Vector3(mouseDirection.x, 0, mouseDirection.z));
             transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * 5f);
 
-            //draw line to mouse (currently busted)
-            Vector3 directionOfHitPoint = (hitInfo.point - transform.position).normalized * lineDistance;
-            line.SetPositions(new[] { transform.position, directionOfHitPoint });
 
-            
-        }
-
-        if (Input.GetMouseButtonUp(0))
-        {
-            if (currentKickCharge <= 0)
-            {
-                ball.GetComponent<Rigidbody>().isKinematic = false;
-                ball.GetComponent<Rigidbody>().AddForce((hitInfo.point - ball.transform.position).normalized * kickforce, ForceMode.Impulse);
-                line.enabled = false;
-                kicking = false;
-
-            }
-            else
-            {
-                ball.GetComponent<Rigidbody>().isKinematic = false;
-                line.enabled = false;
-                kicking = false;
-            }
         }
 
     }
+
+    void Grab()
+    {
+        if (inRange)
+        {
+
+            ball.GetComponent<Rigidbody>().isKinematic = true;
+            ball.transform.position = Vector3.Lerp(ball.transform.position, ballPrimer.transform.position, Time.deltaTime * 5);
+
+            if (Input.GetMouseButtonUp(1))
+            {
+                Drop();
+            }
+
+            if (Input.GetMouseButtonDown(0))
+            {
+                Throw();
+            }
+        }
+        else
+        {
+            Invoke("HoldDelay", 1);
+        }
+
+    }
+
+    void Drop()
+    {
+        ball.GetComponent<Rigidbody>().isKinematic = false;
+        holding = false;
+    }
+
+    void Throw()
+    {
+        throwing = true;
+        holding = false;
+        ball.GetComponent<Rigidbody>().isKinematic = false;
+        ball.GetComponent<Rigidbody>().AddForce((hitInfo.point - ball.transform.position).normalized * throwforce, ForceMode.Impulse);
+        Invoke("HoldDelay", 1);
+    }
+
+    void HoldDelay()
+    {
+        throwing = false;
+    }
+
 }
