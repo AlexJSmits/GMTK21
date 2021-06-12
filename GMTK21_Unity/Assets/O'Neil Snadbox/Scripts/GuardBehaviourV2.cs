@@ -9,24 +9,26 @@ public class GuardBehaviourV2 : MonoBehaviour
     //public Animator movementAnimator;
     public NavMeshAgent agent;
 
-    public GameObject guard;
-
-    public GameObject guardModle;
-
     public GameObject player;
 
     public GameObject playerLastPos;
 
-    public GameObject post;
+    public GameObject alertSymbol;
 
     // public RangeSensor sensor;
     public TriggerSensor fov;
     public float chaseSpeed = 4f;
 
+    //Patrol Vars
+    public GameObject post;
+    public Vector3[] patrolPoints;
+    private int patrolPoint = 0;
+
     //for searching state
+    public bool patrolingGuard = false;
     public float speed;
     public float timerDecrease = 1f;
-    public GameObject patrolPoint;
+    //public GameObject patrolPoint;
 
     //search timer vars
     public float searchTime;
@@ -53,13 +55,13 @@ public class GuardBehaviourV2 : MonoBehaviour
     GameStates gameState;
     private void Awake()
     {
-        agent.Warp(transform.position);
+        //agent.Warp(transform.position);
     }
     void Start()
     {
         audioSource = GetComponent<AudioSource>();
         StartPatrol();
-        gameState = GameStates.chasing;
+        gameState = GameStates.patroling;
         searchTime = startSearchTime;
         InvokeRepeating("PlayIdle1Audio", 20, 30);
         InvokeRepeating("PlayIdle2Audio", 5, 30);
@@ -72,18 +74,19 @@ public class GuardBehaviourV2 : MonoBehaviour
         switch (gameState)
         {
             case GameStates.patroling:
-                //Debug.Log("We are in state patroling!");
-                alertPlaying = false;
-                returnPlaying = false;
-                idle2Playing = false;
+                Patrol();
+                Debug.Log("We are in state patroling!");
+                //alertPlaying = false;
+                //returnPlaying = false;
+                //idle2Playing = false;
 
-                if (!idle1Playing)
-                {
-                    audioSource.PlayOneShot(idleChatterClip1);
-                    idle1Playing = true;
-                }
+                //if (!idle1Playing)
+                //{
+                //    audioSource.PlayOneShot(idleChatterClip1);
+                //    idle1Playing = true;
+                //}
 
-                StartPatrol();
+                //StartPatrol();
                 break;
             case GameStates.chasing:
                 Debug.Log("We are in state chasing!");
@@ -150,24 +153,42 @@ public class GuardBehaviourV2 : MonoBehaviour
         //movementAnimator.Play(animStateName);
     }
 
+    public void Patrol()
+    {
+        //agent.Resume();
+        if (patrolPoints.Length > 0)
+        {
+            agent.SetDestination(patrolPoints[patrolPoint]);
+            if (transform.position == patrolPoints[patrolPoint] || Vector3.Distance(transform.position, patrolPoints[patrolPoint]) < 0.2f)
+            {
+                patrolPoint++;    //use distance if needed(lower precision)
+            }
+            if (patrolPoint >= patrolPoints.Length)
+            {
+                patrolPoint = 0;
+
+            }
+        }
+    }
     public void Chasing()
     {
         var deteced = fov.GetNearest();
         if (deteced != null )
         {
             Chase(deteced);
+            alertSymbol.SetActive(true);
         }
     }
    
     void Chase(GameObject target)
     {
         transform.LookAt(target.transform.position);
-        if ((transform.position - target.transform.position).magnitude > 3f)
+        if ((transform.position - target.transform.position).magnitude > 1.5f)
         {
             agent.SetDestination(target.transform.position);
             //movementAnimator.SetFloat("Move", 1f);
         }
-        if ((transform.position - target.transform.position).magnitude < 3f)
+        if ((transform.position - target.transform.position).magnitude < 1.5f)
         {
             agent.SetDestination(transform.position);
             //movementAnimator.Play("Attack");
@@ -215,8 +236,8 @@ public class GuardBehaviourV2 : MonoBehaviour
         {
             //movementAnimator.Play("Movement");
             gameState = GameStates.returningToPost;
-            guardModle.transform.localRotation = Quaternion.identity;
-            guardModle.transform.localPosition = new Vector3(0, 0, 0);
+            //guardModle.transform.localRotation = Quaternion.identity;
+            //guardModle.transform.localPosition = new Vector3(0, 0, 0);
             searchTime = startSearchTime;
         }
     }
