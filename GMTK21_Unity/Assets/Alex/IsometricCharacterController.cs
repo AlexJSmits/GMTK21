@@ -12,6 +12,7 @@ public class IsometricCharacterController : MonoBehaviour
     public float rotationSpeed = 1;
     public float lineDistance = 3;
     public float turnSmoothTime = 0.1f;
+    public float kickforce = 1;
     public Transform cam;
     public Transform camPivot;
 
@@ -29,6 +30,7 @@ public class IsometricCharacterController : MonoBehaviour
     {
         controller = GetComponent<CharacterController>();
         line = GetComponent<LineRenderer>();
+        Physics.IgnoreLayerCollision(8, 9, true);
     }
 
     // Update is called once per frame
@@ -47,12 +49,6 @@ public class IsometricCharacterController : MonoBehaviour
         {
             kicking = true;
             line.enabled = true;
-        }
-
-        if (Input.GetMouseButtonUp(0))
-        {
-            kicking = false;
-            line.enabled = false;
         }
 
     }
@@ -98,10 +94,19 @@ public class IsometricCharacterController : MonoBehaviour
             transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * 5f);
 
             //draw line to mouse
-            Vector3 directionOfHitPoint = transform.position + hitInfo.point.normalized * lineDistance;
+            Vector3 directionOfHitPoint = (transform.position + hitInfo.point).normalized * lineDistance;
             line.SetPositions(new[] { transform.position, directionOfHitPoint });
 
-
+            
         }
+
+        if (Input.GetMouseButtonUp(0))
+        {
+            ball.GetComponent<Rigidbody>().AddForce((hitInfo.point - ball.transform.position).normalized * kickforce, ForceMode.Impulse);
+            line.enabled = false;
+            kicking = false;
+        }
+            
+
     }
 }
