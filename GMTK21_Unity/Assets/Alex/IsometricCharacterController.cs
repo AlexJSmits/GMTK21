@@ -51,6 +51,7 @@ public class IsometricCharacterController : MonoBehaviour
         if (Input.GetMouseButton(1) && !holding && !throwing)
         {
             holding = true;
+            speed = 2;
         }
 
     }
@@ -123,12 +124,14 @@ public class IsometricCharacterController : MonoBehaviour
     void Drop()
     {
         ball.GetComponent<Rigidbody>().isKinematic = false;
+        speed = 6;
         holding = false;
     }
 
     void Throw()
     {
         throwing = true;
+        speed = 6;
         holding = false;
         ball.GetComponent<Rigidbody>().isKinematic = false;
         ball.GetComponent<Rigidbody>().AddForce((hitInfo.point - ball.transform.position).normalized * throwforce, ForceMode.Impulse);
