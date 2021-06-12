@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -8,21 +9,25 @@ public class IsometricCharacterController : MonoBehaviour
 {
 
     public GameObject ball;
+    public GameObject ballPrimer;
+    public Transform cam;
+    public Transform camPivot;
+    [Space]
     public float speed = 6;
     public float rotationSpeed = 1;
     public float lineDistance = 3;
     public float turnSmoothTime = 0.1f;
     public float kickforce = 1;
-    public Transform cam;
-    public Transform camPivot;
+    public float kickChargeTime = 1;
 
+
+    private float currentKickCharge;
     private float turnSmoothVelocity;
     private bool kicking;
     private CharacterController controller;
     private LineRenderer line;
     private Ray ray;
     private RaycastHit hitInfo;
-
 
 
     // Start is called before the first frame update
@@ -49,6 +54,7 @@ public class IsometricCharacterController : MonoBehaviour
         {
             kicking = true;
             line.enabled = true;
+            currentKickCharge = kickChargeTime;
         }
 
     }
@@ -83,18 +89,23 @@ public class IsometricCharacterController : MonoBehaviour
 
     void Kick()
     {
+        currentKickCharge -= Time.deltaTime;
+
         ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+
+        ball.GetComponent<Rigidbody>().isKinematic = true;
+        ball.transform.position = Vector3.Lerp(ball.transform.position, ballPrimer.transform.position, Time.deltaTime * 5);
         
         if (Physics.Raycast(ray, out hitInfo))
         {
-            //rotate to mouse
+            //rotate player to mouse
 
             Vector3 direction = (hitInfo.point - transform.position).normalized;
             Quaternion lookRotation = Quaternion.LookRotation(new Vector3(direction.x, 0, direction.z));
             transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * 5f);
 
-            //draw line to mouse
-            Vector3 directionOfHitPoint = (transform.position + hitInfo.point).normalized * lineDistance;
+            //draw line to mouse (currently busted)
+            Vector3 directionOfHitPoint = (hitInfo.point - transform.position).normalized * lineDistance;
             line.SetPositions(new[] { transform.position, directionOfHitPoint });
 
             
@@ -102,11 +113,21 @@ public class IsometricCharacterController : MonoBehaviour
 
         if (Input.GetMouseButtonUp(0))
         {
-            ball.GetComponent<Rigidbody>().AddForce((hitInfo.point - ball.transform.position).normalized * kickforce, ForceMode.Impulse);
-            line.enabled = false;
-            kicking = false;
+            if (currentKickCharge <= 0)
+            {
+                ball.GetComponent<Rigidbody>().isKinematic = false;
+                ball.GetComponent<Rigidbody>().AddForce((hitInfo.point - ball.transform.position).normalized * kickforce, ForceMode.Impulse);
+                line.enabled = false;
+                kicking = false;
+
+            }
+            else
+            {
+                ball.GetComponent<Rigidbody>().isKinematic = false;
+                line.enabled = false;
+                kicking = false;
+            }
         }
-            
 
     }
 }
