@@ -6,26 +6,29 @@ using UnityEngine.UIElements;
 
 public class IsometricCharacterController : MonoBehaviour
 {
-    private CharacterController controller;
 
+    public GameObject ball;
     public float speed = 6;
     public float rotationSpeed = 1;
-
-
+    public float lineDistance = 3;
+    public float turnSmoothTime = 0.1f;
     public Transform cam;
     public Transform camPivot;
 
-    public float turnSmoothTime = 0.1f;
-    float turnSmoothVelocity;
-    bool kicking;
+    private float turnSmoothVelocity;
+    private bool kicking;
+    private CharacterController controller;
+    private LineRenderer line;
+    private Ray ray;
+    private RaycastHit hitInfo;
 
-    Ray ray;
-    RaycastHit hitInfo;
+
 
     // Start is called before the first frame update
     void Start()
     {
         controller = GetComponent<CharacterController>();
+        line = GetComponent<LineRenderer>();
     }
 
     // Update is called once per frame
@@ -43,11 +46,13 @@ public class IsometricCharacterController : MonoBehaviour
         if (Input.GetMouseButtonDown(0))
         {
             kicking = true;
+            line.enabled = true;
         }
 
         if (Input.GetMouseButtonUp(0))
         {
             kicking = false;
+            line.enabled = false;
         }
 
     }
@@ -86,9 +91,17 @@ public class IsometricCharacterController : MonoBehaviour
         
         if (Physics.Raycast(ray, out hitInfo))
         {
+            //rotate to mouse
+
             Vector3 direction = (hitInfo.point - transform.position).normalized;
             Quaternion lookRotation = Quaternion.LookRotation(new Vector3(direction.x, 0, direction.z));
             transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * 5f);
+
+            //draw line to mouse
+            Vector3 directionOfHitPoint = transform.position + hitInfo.point.normalized * lineDistance;
+            line.SetPositions(new[] { transform.position, directionOfHitPoint });
+
+
         }
     }
 }
