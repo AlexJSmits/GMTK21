@@ -27,6 +27,8 @@ public class IsometricCharacterController : MonoBehaviour
     private CharacterController controller;
     private Ray ray;
     private RaycastHit hitInfo;
+    private Animator animator;
+    private Vector3 direction;
 
 
     // Start is called before the first frame update
@@ -34,6 +36,7 @@ public class IsometricCharacterController : MonoBehaviour
     {
         controller = GetComponent<CharacterController>();
         Physics.IgnoreLayerCollision(8, 9, true);
+        animator = GetComponentInChildren<Animator>();
     }
 
     // Update is called once per frame
@@ -43,7 +46,7 @@ public class IsometricCharacterController : MonoBehaviour
 
         PlayerMovement();
 
-        if (holding)
+        if (holding & inRange)
         {
             Grab();
         }
@@ -54,13 +57,33 @@ public class IsometricCharacterController : MonoBehaviour
             speed = 2;
         }
 
+        //Holding Animation
+        if (holding)
+        {
+            animator.SetFloat("HoldingSpeed", Mathf.MoveTowards(animator.GetFloat("HoldingSpeed"), 1, Time.deltaTime * 5));
+        }
+        else
+        {
+            animator.SetFloat("HoldingSpeed", Mathf.MoveTowards(animator.GetFloat("HoldingSpeed"), -1, Time.deltaTime * 5));
+        }
+
+        //Walking Animation
+        if (direction.magnitude > 0.1f)
+        {
+            animator.SetFloat("WalkSpeed", Mathf.MoveTowards(animator.GetFloat("WalkSpeed"), 1, Time.deltaTime * 5));
+        }
+        else
+        {
+            animator.SetFloat("WalkSpeed", Mathf.MoveTowards(animator.GetFloat("WalkSpeed"), -1, Time.deltaTime * 5));
+        }
+
     }
 
     void PlayerMovement()
     {
         float horizontal = Input.GetAxisRaw("Horizontal");
         float vertical = Input.GetAxisRaw("Vertical");
-        Vector3 direction = new Vector3(horizontal, 0f, vertical).normalized;
+        direction = new Vector3(horizontal, 0f, vertical).normalized;
 
         if (direction.magnitude >= 0.1f)
         {
