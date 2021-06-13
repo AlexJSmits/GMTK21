@@ -158,7 +158,7 @@ public class GuardBehaviourV2 : MonoBehaviour
 
     public void Patrol()
     {
-        //agent.Resume();
+        movementAnimator.SetFloat("Move", 0.5f);
         if (patrolPoints.Length > 0)
         {
             agent.SetDestination(patrolPoints[patrolPoint]);
@@ -179,19 +179,19 @@ public class GuardBehaviourV2 : MonoBehaviour
         if (deteced != null )
         {
             Chase(deteced);
-            alertSymbol.SetActive(true);
+            //alertSymbol.SetActive(true);
         }
     }
    
     void Chase(GameObject target)
     {
-        transform.LookAt(target.transform.position);
-        if ((transform.position - target.transform.position).magnitude > 1f)
+        //transform.LookAt(target.transform.position);
+        if ((transform.position - target.transform.position).magnitude > 1.5f)
         {
             agent.SetDestination(target.transform.position);
             movementAnimator.SetFloat("Move", 1f);
         }
-        if ((transform.position - target.transform.position).magnitude < 1f)
+        if ((transform.position - target.transform.position).magnitude < 1.5f)
         {
             agent.SetDestination(transform.position);
             playerDeath.Invoke();
@@ -235,7 +235,8 @@ public class GuardBehaviourV2 : MonoBehaviour
     {
         if (searchTime >= 0)
         {
-            //movementAnimator.Play("Searching");
+            movementAnimator.SetFloat("Move", 0f);
+            movementAnimator.Play("Searching");
             searchTime -= (timerDecrease * Time.deltaTime);
         }
         else
@@ -264,7 +265,6 @@ public class GuardBehaviourV2 : MonoBehaviour
     {
         gameState = GameStates.chasing;
     }
-
     public void SearchStateTransition()
     {
         gameState = GameStates.searching;
@@ -278,5 +278,10 @@ public class GuardBehaviourV2 : MonoBehaviour
     {
         audioSource.clip = idleChatterClip2;
         audioSource.Play();
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        
     }
 }
