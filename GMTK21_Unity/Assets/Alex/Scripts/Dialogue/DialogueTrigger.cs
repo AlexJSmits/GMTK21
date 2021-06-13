@@ -22,7 +22,10 @@ public class DialogueTrigger : MonoBehaviour
 
     private void OnTriggerExit(Collider other)
     {
-        GetComponent<BoxCollider>().enabled = false;
+        if (other.transform.CompareTag("Player"))
+        {
+            GetComponent<BoxCollider>().enabled = false;
+        }  
     }
 
 }
