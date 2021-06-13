@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Security.Policy;
 using System.Threading;
 using UnityEditor;
 using UnityEngine;
@@ -23,13 +24,21 @@ public class IsometricCharacterController : MonoBehaviour
     public bool throwing;
     public bool inRange;
     public bool holding;
-    
+
+    [Space]
+    public AudioClip[] ballNChain;
+
+    [Space]
+    public AudioSource playerNoise;
+    public AudioSource ballNoise;
+
     private float turnSmoothVelocity;
     private CharacterController controller;
     private Ray ray;
     private RaycastHit hitInfo;
     private Animator animator;
     private Vector3 direction;
+
 
 
     // Start is called before the first frame update
@@ -94,7 +103,19 @@ public class IsometricCharacterController : MonoBehaviour
 
             Vector3 moveDir = Quaternion.Euler(0f, targetAngle, 0f) * Vector3.forward;
             controller.Move(moveDir.normalized * speed * Time.deltaTime);
+
+            if (!playerNoise.isPlaying)
+            {
+                playerNoise.Play();
+            }
+
+            if (!ballNoise.isPlaying)
+            {
+                ballNoise.clip = ballNChain[0];
+                ballNoise.Play();
+            }
         }
+
 
         if (Input.GetKey(KeyCode.E))
         {
@@ -122,6 +143,9 @@ public class IsometricCharacterController : MonoBehaviour
             ball.GetComponent<Rigidbody>().isKinematic = true;
             ball.transform.position = Vector3.Lerp(ball.transform.position, ballPrimer.transform.position, Time.deltaTime * 10);
 
+            ballNoise.clip = ballNChain[1];
+            ballNoise.Play();
+
             if (Input.GetMouseButtonUp(1))
             {
                 Drop();
@@ -142,6 +166,9 @@ public class IsometricCharacterController : MonoBehaviour
 
     void Drop()
     {
+        ballNoise.clip = ballNChain[1];
+        ballNoise.Play();
+
         ball.GetComponent<Rigidbody>().isKinematic = false;
         speed = 5;
         holding = false;
@@ -149,6 +176,9 @@ public class IsometricCharacterController : MonoBehaviour
 
     void Throw()
     {
+        ballNoise.clip = ballNChain[2];
+        ballNoise.Play();
+
         throwing = true;
         speed = 5;
         holding = false;
