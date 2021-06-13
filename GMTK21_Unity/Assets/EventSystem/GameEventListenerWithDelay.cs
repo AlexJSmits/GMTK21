@@ -14,8 +14,9 @@ public class GameEventListenerWithDelay : GameEventListener
 
     public override void RaiseEvent()
     {
-        unityEvent.Invoke();
         StartCoroutine(RunDelayedEvent());
+        unityEvent.Invoke();
+        
     }
 
     private IEnumerator RunDelayedEvent()
