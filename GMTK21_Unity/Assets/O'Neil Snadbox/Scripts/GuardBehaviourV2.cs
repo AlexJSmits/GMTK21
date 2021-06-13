@@ -55,6 +55,7 @@ public class GuardBehaviourV2 : MonoBehaviour
     private void Awake()
     {
         gameState = GameStates.patroling;
+        player = GameObject.FindGameObjectWithTag("Player");
     }
     void Start()
     {
@@ -121,6 +122,7 @@ public class GuardBehaviourV2 : MonoBehaviour
 
     public void Patrol()
     {
+        movementAnimator.SetFloat("Move", 1f);
         agent.SetDestination(player.transform.position);
 
         //movementAnimator.SetFloat("Move", 0.5f);
