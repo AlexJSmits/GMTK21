@@ -4,7 +4,6 @@ using System.Threading;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
-using UnityEngine.SceneManagement;
 
 public class IsometricCharacterController : MonoBehaviour
 {
@@ -31,13 +30,11 @@ public class IsometricCharacterController : MonoBehaviour
     private RaycastHit hitInfo;
     private Animator animator;
     private Vector3 direction;
-    private bool controls = true;
 
 
     // Start is called before the first frame update
     void Start()
     {
-        controls = true;
         controller = GetComponent<CharacterController>();
         Physics.IgnoreLayerCollision(8, 9, true);
         animator = GetComponentInChildren<Animator>();
@@ -48,10 +45,7 @@ public class IsometricCharacterController : MonoBehaviour
     {
         camPivot.transform.position = transform.position;
 
-        if (controls)
-        {
-            PlayerMovement();
-        }
+        PlayerMovement();
 
         if (holding)
         {
@@ -166,18 +160,6 @@ public class IsometricCharacterController : MonoBehaviour
     void HoldDelay()
     {
         throwing = false;
-    }
-
-    public void Die()
-    {
-        controls = false;
-        animator.SetTrigger("Death");
-        Invoke("Reload", 6);
-    }
-
-    void Reload()
-    {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 
 }
