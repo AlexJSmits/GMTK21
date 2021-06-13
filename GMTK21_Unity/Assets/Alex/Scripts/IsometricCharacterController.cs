@@ -55,7 +55,6 @@ public class IsometricCharacterController : MonoBehaviour
         Physics.IgnoreLayerCollision(8, 9, true);
         animator = GetComponentInChildren<Animator>();
         Physics.IgnoreLayerCollision(8, 12, true);
-        hasControls = true;
     }
 
     // Update is called once per frame
