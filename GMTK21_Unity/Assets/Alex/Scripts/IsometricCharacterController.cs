@@ -107,9 +107,9 @@ public class IsometricCharacterController : MonoBehaviour
         }
 
         ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        if (Physics.Raycast(ray, out hitInfo, Mathf.Infinity))
+        if (Physics.Raycast(ray, out hitInfo, Mathf.Infinity, LayerMask.GetMask("Ground"), QueryTriggerInteraction.Ignore))
         {
-            animationRigTarget.position = hitInfo.point;
+            animationRigTarget.position = hitInfo.point + new Vector3(0, 1, 0);
         }
 
     }
