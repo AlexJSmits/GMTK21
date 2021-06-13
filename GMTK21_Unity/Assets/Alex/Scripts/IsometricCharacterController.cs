@@ -9,12 +9,17 @@ using UnityEngine.UIElements;
 
 public class IsometricCharacterController : MonoBehaviour
 {
+    public Transform groundCheck;
+    public float groundDistance = 0.4f;
+    public LayerMask groundMask;
 
+    [Space]
     public GameObject ball;
     public GameObject ballPrimer;
     public Transform cam;
     public Transform camPivot;
     public Transform animationRigTarget;
+
     [Space]
     public float speed = 5;
     public float rotationSpeed = 1;
@@ -39,7 +44,8 @@ public class IsometricCharacterController : MonoBehaviour
     private RaycastHit hitInfo;
     private Animator animator;
     private Vector3 direction;
-
+    private bool isGrounded;
+    private Vector3 velocity;
 
 
     // Start is called before the first frame update
@@ -53,6 +59,17 @@ public class IsometricCharacterController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        velocity.y += -9.81f * Time.deltaTime;
+
+        controller.Move(velocity * Time.deltaTime);
+
+        isGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
+
+        if(isGrounded && velocity.y < 0)
+        {
+            velocity.y = -2f;
+        }
+
         camPivot.transform.position = transform.position;
 
         PlayerMovement();
