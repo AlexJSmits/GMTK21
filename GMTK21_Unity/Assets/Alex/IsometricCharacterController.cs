@@ -12,8 +12,9 @@ public class IsometricCharacterController : MonoBehaviour
     public GameObject ballPrimer;
     public Transform cam;
     public Transform camPivot;
+    public Transform animationRigTarget;
     [Space]
-    public float speed = 6;
+    public float speed = 5;
     public float rotationSpeed = 1;
     public float turnSmoothTime = 0.1f;
     public float throwforce = 1;
@@ -27,6 +28,8 @@ public class IsometricCharacterController : MonoBehaviour
     private CharacterController controller;
     private Ray ray;
     private RaycastHit hitInfo;
+    private Animator animator;
+    private Vector3 direction;
 
 
     // Start is called before the first frame update
@@ -34,6 +37,7 @@ public class IsometricCharacterController : MonoBehaviour
     {
         controller = GetComponent<CharacterController>();
         Physics.IgnoreLayerCollision(8, 9, true);
+        animator = GetComponentInChildren<Animator>();
     }
 
     // Update is called once per frame
@@ -51,15 +55,36 @@ public class IsometricCharacterController : MonoBehaviour
         if (Input.GetMouseButton(1) && !holding && !throwing)
         {
             holding = true;
+            speed = 2;
         }
 
+        //Holding Animation
+        if (holding && inRange)
+        {
+            animator.SetFloat("HoldingSpeed", Mathf.MoveTowards(animator.GetFloat("HoldingSpeed"), 1, Time.deltaTime * 7));
+        }
+        else
+        {
+            animator.SetFloat("HoldingSpeed", Mathf.MoveTowards(animator.GetFloat("HoldingSpeed"), -1, Time.deltaTime * 7));
+        }
+
+        //Walking Animation
+        if (direction.magnitude > 0.1f)
+        {
+            animator.SetFloat("WalkSpeed", Mathf.MoveTowards(animator.GetFloat("WalkSpeed"), 1, Time.deltaTime * 7));
+        }
+        else
+        {
+            animator.SetFloat("WalkSpeed", Mathf.MoveTowards(animator.GetFloat("WalkSpeed"), -1, Time.deltaTime * 7));
+        }
+        
     }
 
     void PlayerMovement()
     {
         float horizontal = Input.GetAxisRaw("Horizontal");
         float vertical = Input.GetAxisRaw("Vertical");
-        Vector3 direction = new Vector3(horizontal, 0f, vertical).normalized;
+        direction = new Vector3(horizontal, 0f, vertical).normalized;
 
         if (direction.magnitude >= 0.1f)
         {
@@ -82,15 +107,9 @@ public class IsometricCharacterController : MonoBehaviour
         }
 
         ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        if (Physics.Raycast(ray, out hitInfo))
+        if (Physics.Raycast(ray, out hitInfo, Mathf.Infinity))
         {
-            //rotate player to mouse
-
-            Vector3 mouseDirection = (hitInfo.point - transform.position).normalized;
-            Quaternion lookRotation = Quaternion.LookRotation(new Vector3(mouseDirection.x, 0, mouseDirection.z));
-            transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * 5f);
-
-
+            animationRigTarget.position = hitInfo.point;
         }
 
     }
@@ -101,7 +120,7 @@ public class IsometricCharacterController : MonoBehaviour
         {
 
             ball.GetComponent<Rigidbody>().isKinematic = true;
-            ball.transform.position = Vector3.Lerp(ball.transform.position, ballPrimer.transform.position, Time.deltaTime * 5);
+            ball.transform.position = Vector3.Lerp(ball.transform.position, ballPrimer.transform.position, Time.deltaTime * 10);
 
             if (Input.GetMouseButtonUp(1))
             {
@@ -115,7 +134,8 @@ public class IsometricCharacterController : MonoBehaviour
         }
         else
         {
-            Invoke("HoldDelay", 1);
+            speed = 5;
+            holding = false;
         }
 
     }
@@ -123,15 +143,17 @@ public class IsometricCharacterController : MonoBehaviour
     void Drop()
     {
         ball.GetComponent<Rigidbody>().isKinematic = false;
+        speed = 5;
         holding = false;
     }
 
     void Throw()
     {
         throwing = true;
+        speed = 5;
         holding = false;
         ball.GetComponent<Rigidbody>().isKinematic = false;
-        ball.GetComponent<Rigidbody>().AddForce((hitInfo.point - ball.transform.position).normalized * throwforce, ForceMode.Impulse);
+        ball.GetComponent<Rigidbody>().AddForce(ballPrimer.transform.forward * throwforce, ForceMode.Impulse);
         Invoke("HoldDelay", 1);
     }
 

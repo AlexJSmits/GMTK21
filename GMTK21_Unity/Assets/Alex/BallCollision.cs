@@ -5,6 +5,7 @@ using UnityEngine;
 public class BallCollision : MonoBehaviour
 {
     IsometricCharacterController player;
+
     private void Start()
     {
         player = GetComponentInParent<IsometricCharacterController>();
