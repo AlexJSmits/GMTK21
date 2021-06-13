@@ -6,7 +6,7 @@ using SensorToolkit;
 
 public class GuardBehaviourV2 : MonoBehaviour
 {
-    //public Animator movementAnimator;
+    public Animator movementAnimator;
     public NavMeshAgent agent;
 
     public GameObject player;
@@ -44,6 +44,9 @@ public class GuardBehaviourV2 : MonoBehaviour
     bool idle1Playing = false;
     bool idle2Playing = false;
     public AudioSource alertedSound;
+
+    public GameEvent playerDeath;
+
 
     public enum GameStates
     {
@@ -183,16 +186,19 @@ public class GuardBehaviourV2 : MonoBehaviour
     void Chase(GameObject target)
     {
         transform.LookAt(target.transform.position);
-        if ((transform.position - target.transform.position).magnitude > 1.5f)
+        if ((transform.position - target.transform.position).magnitude > 1f)
         {
             agent.SetDestination(target.transform.position);
-            //movementAnimator.SetFloat("Move", 1f);
+            movementAnimator.SetFloat("Move", 1f);
         }
-        if ((transform.position - target.transform.position).magnitude < 1.5f)
+        if ((transform.position - target.transform.position).magnitude < 1f)
         {
             agent.SetDestination(transform.position);
-            //movementAnimator.Play("Attack");
-            //movementAnimator.SetFloat("Move", 0f);
+            playerDeath.Invoke();
+
+            movementAnimator.SetFloat("Move", 0f);
+            movementAnimator.Play("Attack");
+            
         }
     }
 
