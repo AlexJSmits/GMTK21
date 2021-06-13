@@ -19,4 +19,10 @@ public class DialogueTrigger : MonoBehaviour
             TriggerDialogue();
         }
     }
+
+    private void OnTriggerExit(Collider other)
+    {
+        GetComponent<BoxCollider>().enabled = false;
+    }
+
 }
