@@ -6,7 +6,8 @@ public class PlayerDeath : MonoBehaviour
 {
     public void OnPlayerDeath()
     {
+        //Time.timeScale = 0;
         Debug.Log("you died");
-        Destroy(this);
+        Destroy(this.gameObject);
     }
 }
