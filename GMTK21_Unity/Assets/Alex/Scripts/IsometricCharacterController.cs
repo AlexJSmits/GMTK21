@@ -4,6 +4,7 @@ using System.Security.Policy;
 using System.Threading;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UIElements;
 
 public class IsometricCharacterController : MonoBehaviour
@@ -190,6 +191,11 @@ public class IsometricCharacterController : MonoBehaviour
     void HoldDelay()
     {
         throwing = false;
+    }
+
+    public void PlayerDeath()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 
 }

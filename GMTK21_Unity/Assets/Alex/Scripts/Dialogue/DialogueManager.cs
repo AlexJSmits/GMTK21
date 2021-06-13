@@ -11,6 +11,8 @@ public class DialogueManager : MonoBehaviour
     public Animator animator;
     public Animator characterPortaits;
 
+
+    private AudioSource bgM;
     private Queue<string> sentences;
     private bool isOpen;
     private GameObject player;
@@ -21,6 +23,7 @@ public class DialogueManager : MonoBehaviour
         sentences = new Queue<string>();
         animator = GetComponentInChildren<Animator>();
         player = GameObject.FindGameObjectWithTag("Player");
+        bgM = GameObject.FindGameObjectWithTag("BackgroundAudio").GetComponent<AudioSource>();
     }
 
     private void Update()
@@ -47,6 +50,8 @@ public class DialogueManager : MonoBehaviour
     public void StartDialogue (Dialogue dialogue)
     {
         isOpen = true;
+
+        bgM.volume = 0.1f;
 
         player.GetComponentInChildren<Animator>().SetFloat("WalkSpeed", -1);
         player.GetComponent<IsometricCharacterController>().enabled = false;
@@ -111,6 +116,8 @@ public class DialogueManager : MonoBehaviour
 
     void EndDialogue()
     {
+        bgM.volume = 0.25f;
+
         characterPortaits.SetFloat("PlayerTalkWeight", 0);
 
         animator.SetBool("DialogueOpen", false);

@@ -353,7 +353,7 @@ GameObject:
   - component: {fileID: 1513141174160160688}
   - component: {fileID: 1513141174160160694}
   - component: {fileID: 1513141174160160689}
-  m_Layer: 5
+  m_Layer: 0
   m_Name: Text_Background
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -428,7 +428,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1513141174520855561}
   - component: {fileID: 1513141174520855560}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Dialogue UI Player Camera
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -505,7 +505,7 @@ GameObject:
   - component: {fileID: 1513141174563790660}
   - component: {fileID: 1513141174563790663}
   - component: {fileID: 1513141174563790683}
-  m_Layer: 5
+  m_Layer: 0
   m_Name: DialogueCanvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -622,7 +622,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1513141174657220679}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Dialogue UI Model
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -656,7 +656,7 @@ GameObject:
   - component: {fileID: 1513141175380794969}
   - component: {fileID: 1513141175380794975}
   - component: {fileID: 1513141175380794974}
-  m_Layer: 5
+  m_Layer: 0
   m_Name: TextTMP
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -792,7 +792,7 @@ GameObject:
   - component: {fileID: 1513141175396338345}
   - component: {fileID: 1513141175396338351}
   - component: {fileID: 1513141175396338350}
-  m_Layer: 5
+  m_Layer: 0
   m_Name: Bally_Image
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -864,7 +864,7 @@ GameObject:
   - component: {fileID: 1513141175769078576}
   - component: {fileID: 1513141175769078582}
   - component: {fileID: 1513141175769078577}
-  m_Layer: 5
+  m_Layer: 0
   m_Name: Dialogue_Background
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -939,7 +939,7 @@ GameObject:
   - component: {fileID: 1513141175946803454}
   - component: {fileID: 1513141175946803452}
   - component: {fileID: 1513141175946803455}
-  m_Layer: 5
+  m_Layer: 0
   m_Name: Player_Image
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1010,7 +1010,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1513141176013443544}
   - component: {fileID: 1513141176013443545}
-  m_Layer: 5
+  m_Layer: 0
   m_Name: Character Portaits
   m_TagString: Untagged
   m_Icon: {fileID: 0}

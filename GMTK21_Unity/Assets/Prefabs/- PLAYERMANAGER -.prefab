@@ -1849,7 +1849,7 @@ GameObject:
   - component: {fileID: 722894009}
   m_Layer: 0
   m_Name: Backgorund Music
-  m_TagString: Untagged
+  m_TagString: BackgroundAudio
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
