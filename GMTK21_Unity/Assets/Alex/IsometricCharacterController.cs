@@ -13,7 +13,7 @@ public class IsometricCharacterController : MonoBehaviour
     public Transform cam;
     public Transform camPivot;
     [Space]
-    public float speed = 6;
+    public float speed = 5;
     public float rotationSpeed = 1;
     public float turnSmoothTime = 0.1f;
     public float throwforce = 1;
@@ -116,7 +116,8 @@ public class IsometricCharacterController : MonoBehaviour
         }
         else
         {
-            Invoke("HoldDelay", 1);
+            speed = 5;
+            holding = false;
         }
 
     }
@@ -124,14 +125,14 @@ public class IsometricCharacterController : MonoBehaviour
     void Drop()
     {
         ball.GetComponent<Rigidbody>().isKinematic = false;
-        speed = 6;
+        speed = 5;
         holding = false;
     }
 
     void Throw()
     {
         throwing = true;
-        speed = 6;
+        speed = 5;
         holding = false;
         ball.GetComponent<Rigidbody>().isKinematic = false;
         ball.GetComponent<Rigidbody>().AddForce((hitInfo.point - ball.transform.position).normalized * throwforce, ForceMode.Impulse);
