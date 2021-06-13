@@ -46,7 +46,6 @@ public class IsometricCharacterController : MonoBehaviour
     private Vector3 direction;
     private bool isGrounded;
     private Vector3 velocity;
-    private bool hasControls = true;
 
 
     // Start is called before the first frame update
@@ -117,7 +116,7 @@ public class IsometricCharacterController : MonoBehaviour
         float vertical = Input.GetAxisRaw("Vertical");
         direction = new Vector3(horizontal, 0f, vertical).normalized;
 
-        if (direction.magnitude >= 0.1f && hasControls)
+        if (direction.magnitude >= 0.1f)
         {
             float targetAngle = Mathf.Atan2(direction.x, direction.z) * Mathf.Rad2Deg + cam.eulerAngles.y;
             float angle = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle, ref turnSmoothVelocity, turnSmoothTime);
@@ -215,13 +214,6 @@ public class IsometricCharacterController : MonoBehaviour
     }
 
     public void PlayerDeath()
-    {
-        hasControls = false;
-        animator.SetTrigger("Death");
-        Invoke("SceneRestart", 5);
-    }
-
-    void SceneRestart()
     {
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
