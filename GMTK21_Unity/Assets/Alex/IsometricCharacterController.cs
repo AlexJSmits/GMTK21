@@ -12,6 +12,7 @@ public class IsometricCharacterController : MonoBehaviour
     public GameObject ballPrimer;
     public Transform cam;
     public Transform camPivot;
+    public Transform animationRigTarget;
     [Space]
     public float speed = 5;
     public float rotationSpeed = 1;
@@ -46,7 +47,7 @@ public class IsometricCharacterController : MonoBehaviour
 
         PlayerMovement();
 
-        if (holding & inRange)
+        if (holding)
         {
             Grab();
         }
@@ -58,25 +59,25 @@ public class IsometricCharacterController : MonoBehaviour
         }
 
         //Holding Animation
-        if (holding)
+        if (holding && inRange)
         {
-            animator.SetFloat("HoldingSpeed", Mathf.MoveTowards(animator.GetFloat("HoldingSpeed"), 1, Time.deltaTime * 5));
+            animator.SetFloat("HoldingSpeed", Mathf.MoveTowards(animator.GetFloat("HoldingSpeed"), 1, Time.deltaTime * 7));
         }
         else
         {
-            animator.SetFloat("HoldingSpeed", Mathf.MoveTowards(animator.GetFloat("HoldingSpeed"), -1, Time.deltaTime * 5));
+            animator.SetFloat("HoldingSpeed", Mathf.MoveTowards(animator.GetFloat("HoldingSpeed"), -1, Time.deltaTime * 7));
         }
 
         //Walking Animation
         if (direction.magnitude > 0.1f)
         {
-            animator.SetFloat("WalkSpeed", Mathf.MoveTowards(animator.GetFloat("WalkSpeed"), 1, Time.deltaTime * 5));
+            animator.SetFloat("WalkSpeed", Mathf.MoveTowards(animator.GetFloat("WalkSpeed"), 1, Time.deltaTime * 7));
         }
         else
         {
-            animator.SetFloat("WalkSpeed", Mathf.MoveTowards(animator.GetFloat("WalkSpeed"), -1, Time.deltaTime * 5));
+            animator.SetFloat("WalkSpeed", Mathf.MoveTowards(animator.GetFloat("WalkSpeed"), -1, Time.deltaTime * 7));
         }
-
+        
     }
 
     void PlayerMovement()
@@ -106,15 +107,9 @@ public class IsometricCharacterController : MonoBehaviour
         }
 
         ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        if (Physics.Raycast(ray, out hitInfo))
+        if (Physics.Raycast(ray, out hitInfo, Mathf.Infinity))
         {
-            //rotate player to mouse
-
-            Vector3 mouseDirection = (hitInfo.point - transform.position).normalized;
-            Quaternion lookRotation = Quaternion.LookRotation(new Vector3(mouseDirection.x, 0, mouseDirection.z));
-            transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * 5f);
-
-
+            animationRigTarget.position = hitInfo.point;
         }
 
     }
@@ -125,7 +120,7 @@ public class IsometricCharacterController : MonoBehaviour
         {
 
             ball.GetComponent<Rigidbody>().isKinematic = true;
-            ball.transform.position = Vector3.Lerp(ball.transform.position, ballPrimer.transform.position, Time.deltaTime * 5);
+            ball.transform.position = Vector3.Lerp(ball.transform.position, ballPrimer.transform.position, Time.deltaTime * 10);
 
             if (Input.GetMouseButtonUp(1))
             {
@@ -158,7 +153,7 @@ public class IsometricCharacterController : MonoBehaviour
         speed = 5;
         holding = false;
         ball.GetComponent<Rigidbody>().isKinematic = false;
-        ball.GetComponent<Rigidbody>().AddForce((hitInfo.point - ball.transform.position).normalized * throwforce, ForceMode.Impulse);
+        ball.GetComponent<Rigidbody>().AddForce(ballPrimer.transform.forward * throwforce, ForceMode.Impulse);
         Invoke("HoldDelay", 1);
     }
 
