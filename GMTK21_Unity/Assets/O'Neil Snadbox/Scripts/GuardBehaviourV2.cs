@@ -45,6 +45,9 @@ public class GuardBehaviourV2 : MonoBehaviour
     bool idle2Playing = false;
     public AudioSource alertedSound;
 
+    public GameEvent playerDeath;
+
+
     public enum GameStates
     {
         patroling,
@@ -183,14 +186,15 @@ public class GuardBehaviourV2 : MonoBehaviour
     void Chase(GameObject target)
     {
         transform.LookAt(target.transform.position);
-        if ((transform.position - target.transform.position).magnitude > 1.5f)
+        if ((transform.position - target.transform.position).magnitude > 1f)
         {
             agent.SetDestination(target.transform.position);
             //movementAnimator.SetFloat("Move", 1f);
         }
-        if ((transform.position - target.transform.position).magnitude < 1.5f)
+        if ((transform.position - target.transform.position).magnitude < 1f)
         {
             agent.SetDestination(transform.position);
+            playerDeath?.Invoke();
             //movementAnimator.Play("Attack");
             //movementAnimator.SetFloat("Move", 0f);
         }
