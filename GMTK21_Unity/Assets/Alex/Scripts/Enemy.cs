@@ -12,6 +12,8 @@ public class Enemy : MonoBehaviour
 
     public GameObject player;
     public GameObject damageZone;
+    public float doDamageDelay;
+    public float attackCooldown;
 
     private Animator animator;
     private float distanceFromPlayer;
@@ -73,8 +75,8 @@ public class Enemy : MonoBehaviour
     {
         attacking = true;
         animator.SetTrigger("Attack");
-        Invoke("DoDamage", 1f);
-        Invoke("AttackCoolDown", 2);
+        Invoke("DoDamage", doDamageDelay);
+        Invoke("AttackCoolDown", attackCooldown);
     }
 
     void DoDamage()
