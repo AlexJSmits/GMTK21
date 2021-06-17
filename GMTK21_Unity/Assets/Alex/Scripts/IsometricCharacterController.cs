@@ -54,6 +54,8 @@ public class IsometricCharacterController : MonoBehaviour
         Physics.IgnoreLayerCollision(8, 9, true);
         animator = GetComponentInChildren<Animator>();
         Physics.IgnoreLayerCollision(8, 12, true);
+        animator.SetFloat("HoldingSpeed", -1);
+        animator.SetFloat("WalkSpeed", -1);
     }
 
     // Update is called once per frame
