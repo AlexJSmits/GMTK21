@@ -36,6 +36,7 @@ public class IsometricCharacterController : MonoBehaviour
     [Space]
     public AudioSource playerNoise;
     public AudioSource ballNoise;
+    public GameObject deathState;
 
     private float turnSmoothVelocity;
     private CharacterController controller;
@@ -215,7 +216,8 @@ public class IsometricCharacterController : MonoBehaviour
 
     public void PlayerDeath()
     {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        Instantiate(deathState, transform.position, transform.rotation);
+        Destroy(this.gameObject);
     }
 
 }
